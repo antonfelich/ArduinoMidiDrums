@@ -70,6 +70,9 @@ unsigned short noteMap[NUM_PIEZOS];
 //map that holds the respective threshold to each piezo
 unsigned short thresholdMap[NUM_PIEZOS];
 
+//map that holds the respective velocities to each piezo
+unsigned short velScale[NUM_PIEZOS];
+
 //Ring buffers to store analog signal and peaks
 short currentSignalIndex[NUM_PIEZOS];
 short currentPeakIndex[NUM_PIEZOS];
