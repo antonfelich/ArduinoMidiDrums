@@ -20,31 +20,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define DEBUG true
+
 //Piezo defines
 #define NUM_PIEZOS 6
-#define SNARE_THRESHOLD 30     //anything < TRIGGER_THRESHOLD is treated as 0
-#define LTOM_THRESHOLD 30
-#define RTOM_THRESHOLD 30
-#define LCYM_THRESHOLD 100
-#define RCYM_THRESHOLD 100
-#define KICK_THRESHOLD 50
+#define GREEN_THRESHOLD 30     //anything < TRIGGER_THRESHOLD is treated as 0
+#define KICK_THRESHOLD 30
+#define YELLOW_THRESHOLD 30
+#define RED_THRESHOLD 100
+#define BLUE_THRESHOLD 100
+#define ORANGE_THRESHOLD 50
 #define START_SLOT 0     //first analog slot of piezos
 
 //Piezo scaling defines
-#define SNARE_SCALE 20    //    100 is 100% of raw value - that is no scaling
-#define LTOM_SCALE 50     //  < 100 scales the velocity down so that you have to hit harder to get maximum velocity
-#define RTOM_SCALE 50     //  > 100 scales the velocity up so you get maximum velocity with softer hits
-#define LCYM_SCALE 50
-#define RCYM_SCALE 50
-#define KICK_SCALE 100
+#define GREEN_SCALE 20    //    100 is 100% of raw value - that is no scaling
+#define KICK_SCALE 50     //  < 100 scales the velocity down so that you have to hit harder to get maximum velocity
+#define YELLOW_SCALE 50     //  > 100 scales the velocity up so you get maximum velocity with softer hits
+#define RED_SCALE 50
+#define BLUE_SCALE 50
+#define ORANGE_SCALE 100
 
 //MIDI note defines for each trigger
-#define SNARE_NOTE 70
-#define LTOM_NOTE 71
-#define RTOM_NOTE 72
-#define LCYM_NOTE 73
-#define RCYM_NOTE 74
-#define KICK_NOTE 75
+#define GREEN_NOTE 70
+#define KICK_NOTE 71
+#define YELLOW_NOTE 72
+#define RED_NOTE 73
+#define BLUE_NOTE 74
+#define ORANGE_NOTE 75
 
 //MIDI defines
 #define NOTE_ON_CMD 0x90
@@ -88,7 +90,7 @@ unsigned long lastNoteTime[NUM_PIEZOS];
 
 void setup()
 {
-  Serial.begin(SERIAL_RATE);
+  Serial.begin((DEBUG == true) ? 9600 : SERIAL_RATE);
   
   //initialize globals
   for(short i=0; i<NUM_PIEZOS; ++i)
@@ -105,26 +107,26 @@ void setup()
     slotMap[i] = START_SLOT + i;
   }
   
-  thresholdMap[0] = KICK_THRESHOLD;
-  thresholdMap[1] = RTOM_THRESHOLD;
-  thresholdMap[2] = RCYM_THRESHOLD;
-  thresholdMap[3] = LCYM_THRESHOLD;
-  thresholdMap[4] = SNARE_THRESHOLD;
-  thresholdMap[5] = LTOM_THRESHOLD;  
+  thresholdMap[0] = ORANGE_THRESHOLD;
+  thresholdMap[1] = YELLOW_THRESHOLD;
+  thresholdMap[2] = BLUE_THRESHOLD;
+  thresholdMap[3] = RED_THRESHOLD;
+  thresholdMap[4] = GREEN_THRESHOLD;
+  thresholdMap[5] = KICK_THRESHOLD;  
 
-  velScale[0] = KICK_SCALE;
-  velScale[1] = RTOM_SCALE;
-  velScale[2] = LCYM_SCALE;
-  velScale[3] = LCYM_SCALE;
-  velScale[4] = SNARE_SCALE;
-  velScale[5] = LTOM_SCALE;
+  velScale[0] = ORANGE_SCALE;
+  velScale[1] = YELLOW_SCALE;
+  velScale[2] = RED_SCALE;
+  velScale[3] = RED_SCALE;
+  velScale[4] = GREEN_SCALE;
+  velScale[5] = KICK_SCALE;
   
-  noteMap[0] = KICK_NOTE;
-  noteMap[1] = RTOM_NOTE;
-  noteMap[2] = RCYM_NOTE;
-  noteMap[3] = LCYM_NOTE;
-  noteMap[4] = SNARE_NOTE;
-  noteMap[5] = LTOM_NOTE;  
+  noteMap[0] = ORANGE_NOTE;
+  noteMap[1] = YELLOW_NOTE;
+  noteMap[2] = BLUE_NOTE;
+  noteMap[3] = RED_NOTE;
+  noteMap[4] = GREEN_NOTE;
+  noteMap[5] = KICK_NOTE;  
 }
 
 void loop()
@@ -223,9 +225,11 @@ void noteFire(unsigned short note, unsigned short velocity)
 {
   if(velocity > MAX_MIDI_VELOCITY)
     velocity = MAX_MIDI_VELOCITY;
-  
-  midiNoteOn(note, velocity);
-  midiNoteOff(note, velocity);
+
+   Serial.println("Note detected");
+   Serial.println(note);
+  //midiNoteOn(note, velocity);
+  //midiNoteOff(note, velocity);
 }
 
 void midiNoteOn(byte note, byte midiVelocity)
